@@ -43,6 +43,12 @@ export default function ProjectDetails() {
   const [tasks, setTasks] = useState(project.tasks || []);
   const [logs, setLogs] = useState(project.logs || []);
 
+  // --- NEW: Sync logs and tasks to project when project changes (fixes stale/incorrect state if user navigates to a new project)
+  useEffect(() => {
+    setTasks(project.tasks || []);
+    setLogs(project.logs || []);
+  }, [project]);
+
   // Keep tasks/logs in sync with current project and update projects array
   useEffect(() => {
     // Update the current project object
