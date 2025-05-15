@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, ListCheck, Pencil, Plus } from "lucide-react";
 import { TaskList } from "../components/TaskList";
@@ -11,17 +10,18 @@ export default function ProjectDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  // Pull all projects from localStorage, fallback to project in state if coming directly here
+  // Get all projects from localStorage, fallback to state if needed
   const [projects, setProjects] = useState([]);
   useEffect(() => {
     const stored = localStorage.getItem("lovable-projects");
     setProjects(stored ? JSON.parse(stored) : []);
   }, []);
 
-  // Find the project being shown
+  // Get current project id and find in projects array
   const projectId = state?.project?.id || window.location.pathname.split("/").slice(-1)[0];
   const [project, setProject] = useState(state?.project);
 
+  // Sync local project when projects array loads or id changes
   useEffect(() => {
     if (!state?.project && projects.length) {
       const found = projects.find((p) => p.id === projectId);
@@ -38,36 +38,37 @@ export default function ProjectDetails() {
     );
   }
 
+  // Make sure logs and tasks always in sync with the project object
   const [modalOpen, setModalOpen] = useState(false);
   const [tasks, setTasks] = useState(project.tasks || []);
-  const [logs, setLogs] = useState(project.logs || []); // {date: 'YYYY-MM-DD', text: '...'}
+  const [logs, setLogs] = useState(project.logs || []);
 
-  // Update project data in localStorage when tasks/logs change
+  // Keep tasks/logs in sync with current project and update projects array
   useEffect(() => {
-    setProject((p) => p && { ...p, tasks, logs });
+    // Update the current project object
+    const updatedProject = { ...project, tasks, logs };
+    setProject(updatedProject);
+
+    // Update projects array with updated project
     setProjects((curr) =>
-      curr.map((p) =>
-        p.id === project.id ? { ...p, tasks, logs } : p
-      )
+      curr.map((p) => (p.id === project.id ? updatedProject : p))
     );
+  // Only run when tasks/logs change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tasks, logs]);
 
+  // Persist projects array to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem(
-      "lovable-projects",
-      JSON.stringify(
-        projects.map((p) =>
-          p.id === project.id ? { ...p, tasks, logs } : p
-        )
-      )
-    );
-  }, [projects, tasks, logs, project.id]);
+    localStorage.setItem("lovable-projects", JSON.stringify(projects));
+  }, [projects]);
 
+  // ---- Progress stats
   const completed = tasks.filter((t) => t.completed).length;
   const percent = tasks.length > 0 ? Math.round((completed / tasks.length) * 100) : 0;
 
+  // ---- Add task handler (add to current project's tasks array)
   function handleAddTask(task) {
-    setTasks([...tasks, { ...task, id: Date.now(), completed: false }]);
+    setTasks((prev) => [...prev, { ...task, id: Date.now(), completed: false }]);
     setModalOpen(false);
   }
 
@@ -83,6 +84,7 @@ export default function ProjectDetails() {
     setLogTextarea("");
   }
 
+  // ------ Render
   return (
     <div className="min-h-screen font-poppins bg-gradient-to-br from-purple-50 to-blue-100 flex flex-col">
       <header className="flex items-center p-4 gap-3 bg-white/80 shadow-sm sticky top-0 z-10">
