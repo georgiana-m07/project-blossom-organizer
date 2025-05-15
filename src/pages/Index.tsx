@@ -11,6 +11,7 @@ const initialProjects = [
     description: "Summer kitchen remodel.",
     prog: 60,
     tasks: [],
+    logs: [], // Add logs to track per-project progress
   },
   {
     id: "2",
@@ -18,20 +19,39 @@ const initialProjects = [
     description: "30-day fitness goal.",
     prog: 20,
     tasks: [],
+    logs: [],
   }
 ];
 
 const Index = () => {
+  // NEW: Persist projects with tasks and progress logs.
   const [projects, setProjects] = React.useState(initialProjects);
   const [modalOpen, setModalOpen] = React.useState(false);
+
+  // Helper to update a project by id
+  const updateProject = (id, updatedFields) => {
+    setProjects(projects =>
+      projects.map(p => (p.id === id ? { ...p, ...updatedFields } : p))
+    );
+  };
 
   function handleAddProject(project) {
     setProjects((prev) => [
       ...prev,
-      { ...project, id: `${Date.now()}-${Math.random()}`, tasks: [], prog: 0 },
+      { ...project, id: `${Date.now()}-${Math.random()}`, tasks: [], logs: [], prog: 0 },
     ]);
     setModalOpen(false);
   }
+
+  // Persist projects in localStorage (optional, helpful dev UX)
+  React.useEffect(() => {
+    localStorage.setItem("lovable-projects", JSON.stringify(projects));
+  }, [projects]);
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem("lovable-projects");
+    if (stored) setProjects(JSON.parse(stored));
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-blue-50 flex flex-col font-poppins">
