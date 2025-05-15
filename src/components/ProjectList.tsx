@@ -1,6 +1,6 @@
 
 import React from "react";
-import { FolderPlus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +17,7 @@ export function ProjectList({ projects }) {
           }
         >
           <div className="flex gap-2 items-center">
-            <FolderPlus className="text-purple-300" size={28} />
+            <Plus className="text-purple-300" size={28} />
             <div>
               <div className="font-bold text-lg text-purple-700">{project.title}</div>
               <div className="text-sm text-gray-500">{project.description}</div>

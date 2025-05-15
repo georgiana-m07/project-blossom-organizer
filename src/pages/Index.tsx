@@ -1,6 +1,5 @@
-
 import * as React from "react";
-import { Plus, FolderPlus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { ProjectModal } from "../components/ProjectModal";
 import { ProjectList } from "../components/ProjectList";
 
@@ -11,7 +10,7 @@ const initialProjects = [
     description: "Summer kitchen remodel.",
     prog: 60,
     tasks: [],
-    logs: [], // Add logs to track per-project progress
+    logs: [],
   },
   {
     id: "2",
@@ -65,7 +64,7 @@ const Index = () => {
         <div className={`px-3 py-4 flex-1 ${projects.length === 0 ? "flex items-center justify-center" : ""}`}>
           {projects.length === 0 ? (
             <div className="text-center opacity-80 animate-fade-in">
-              <FolderPlus className="mx-auto mb-4 text-purple-400" size={44} />
+              <Plus className="mx-auto mb-4 text-purple-400" size={44} />
               <h2 className="text-lg font-semibold mb-1">No projects yet</h2>
               <p className="text-sm text-gray-500 mb-6">Tap the "+" button to create your first project!</p>
             </div>
