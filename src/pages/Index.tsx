@@ -1,23 +1,34 @@
 
 import * as React from "react";
 import { Plus, FolderPlus } from "lucide-react";
-import { ProjectCard } from "../components/ProjectCard";
 import { ProjectModal } from "../components/ProjectModal";
+import { ProjectList } from "../components/ProjectList";
 
-type Project = {
-  id: string;
-  title: string;
-  description: string;
-};
+const initialProjects = [
+  {
+    id: "1",
+    title: "Home Renovation",
+    description: "Summer kitchen remodel.",
+    prog: 60,
+    tasks: [],
+  },
+  {
+    id: "2",
+    title: "Running Challenge",
+    description: "30-day fitness goal.",
+    prog: 20,
+    tasks: [],
+  }
+];
 
 const Index = () => {
-  const [projects, setProjects] = React.useState<Project[]>([]);
+  const [projects, setProjects] = React.useState(initialProjects);
   const [modalOpen, setModalOpen] = React.useState(false);
 
-  function handleAddProject(project: Omit<Project, "id">) {
+  function handleAddProject(project) {
     setProjects((prev) => [
       ...prev,
-      { ...project, id: `${Date.now()}-${Math.random()}` },
+      { ...project, id: `${Date.now()}-${Math.random()}`, tasks: [], prog: 0 },
     ]);
     setModalOpen(false);
   }
@@ -26,13 +37,10 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-blue-50 flex flex-col font-poppins">
       {/* Header */}
       <header className="pb-2 pt-7 px-4 flex flex-col gap-2 bg-gradient-to-b from-purple-200 to-transparent">
-        <div className="flex items-center gap-3">
-          <span className="font-bold text-3xl text-purple-800 tracking-tight">Your Projects</span>
-        </div>
+        <span className="font-playfair font-bold text-3xl text-purple-800 tracking-tight">Your Projects</span>
         <p className="text-sm text-gray-600">Plan, track, and complete your personal projects with ease.</p>
       </header>
 
-      {/* Project List */}
       <main className="flex-1 flex flex-col">
         <div className={`px-3 py-4 flex-1 ${projects.length === 0 ? "flex items-center justify-center" : ""}`}>
           {projects.length === 0 ? (
@@ -42,11 +50,7 @@ const Index = () => {
               <p className="text-sm text-gray-500 mb-6">Tap the "+" button to create your first project!</p>
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 animate-fade-in">
-              {projects.map((project) => (
-                <ProjectCard key={project.id} {...project} />
-              ))}
-            </div>
+            <ProjectList projects={projects} />
           )}
         </div>
       </main>
