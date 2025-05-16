@@ -62,7 +62,7 @@ export function EditTaskModal({ open, onOpenChange, onSubmit, task, categories }
             <Label>Due Date</Label>
             <Input type="date" value={due} onChange={e => setDue(e.target.value)} />
           </div>
-          <Button type="submit" className="w-full bg-purple-500 text-white">Save Changes</Button>
+          <Button type="submit" className="w-full bg-primary text-white">Save Changes</Button>
         </form>
       </DialogContent>
     </Dialog>
