@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Check } from "lucide-react";
+import { Check, Pencil, Trash2 } from "lucide-react";
 
 const categoryColors = {
   "Urgent": "bg-red-200 text-red-700",
@@ -10,7 +10,7 @@ const categoryColors = {
   "Work-related": "bg-orange-100 text-orange-700"
 };
 
-export function TaskList({ tasks, setTasks, onToggleTask }) {
+export function TaskList({ tasks, setTasks, onToggleTask, onDeleteTask, onEditTask }) {
   function toggleCompleted(id) {
     // Use the passed handler if available, otherwise fallback to direct state update
     if (onToggleTask) {
@@ -35,6 +35,24 @@ export function TaskList({ tasks, setTasks, onToggleTask }) {
             <span className={`ml-2 px-2 py-0.5 rounded text-xs font-medium ${categoryColors[task.category] || "bg-gray-100 text-gray-500"}`}>{task.category}</span>
             <span className={`ml-2 px-2 py-0.5 rounded text-xs border ${task.priority === "High" ? "border-red-400 text-red-600" : task.priority === "Medium" ? "border-yellow-300 text-yellow-500" : "border-green-300 text-green-600"}`}>{task.priority}</span>
             {task.due && <span className="ml-2 text-xs text-gray-500">Due: {task.due}</span>}
+          </div>
+          
+          {/* Task action buttons */}
+          <div className="flex gap-1 flex-shrink-0">
+            <button 
+              onClick={() => onEditTask(task)}
+              className="text-gray-500 hover:text-blue-500 p-1 rounded hover:bg-gray-100 transition-colors"
+              title="Edit task"
+            >
+              <Pencil size={16} />
+            </button>
+            <button 
+              onClick={() => onDeleteTask(task.id)}
+              className="text-gray-500 hover:text-red-500 p-1 rounded hover:bg-gray-100 transition-colors"
+              title="Delete task"
+            >
+              <Trash2 size={16} />
+            </button>
           </div>
         </div>
       ))}

@@ -4,12 +4,15 @@ import { ArrowLeft, ListCheck, Pencil, Plus } from "lucide-react";
 import { TaskList } from "../components/TaskList";
 import { Button } from "@/components/ui/button";
 import { AddTaskModal } from "../components/AddTaskModal";
+import { EditTaskModal } from "../components/EditTaskModal";
 import { useNavigate, useLocation } from "react-router-dom";
 import ContributionGraph from "../components/ContributionGraph";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProjectDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
+  const { toast } = useToast();
 
   // Get all projects from localStorage, fallback to state if needed
   const [projects, setProjects] = useState([]);
@@ -40,7 +43,9 @@ export default function ProjectDetails() {
   }
 
   // Make sure logs and tasks always in sync with the project object
-  const [modalOpen, setModalOpen] = useState(false);
+  const [addTaskModalOpen, setAddTaskModalOpen] = useState(false);
+  const [editTaskModalOpen, setEditTaskModalOpen] = useState(false);
+  const [currentEditTask, setCurrentEditTask] = useState(null);
   const [tasks, setTasks] = useState(project.tasks || []);
   const [logs, setLogs] = useState(project.logs || []);
 
@@ -76,7 +81,38 @@ export default function ProjectDetails() {
   // ---- Add task handler (add to current project's tasks array)
   function handleAddTask(task) {
     setTasks((prev) => [...prev, { ...task, id: Date.now(), completed: false }]);
-    setModalOpen(false);
+    setAddTaskModalOpen(false);
+    toast({
+      title: "Task added",
+      description: "Your new task has been added to the project."
+    });
+  }
+
+  // ---- Edit task handler
+  function handleEditTask(task) {
+    setCurrentEditTask(task);
+    setEditTaskModalOpen(true);
+  }
+
+  // ---- Save edited task
+  function handleSaveTask(updatedTask) {
+    setTasks(prev => 
+      prev.map(task => task.id === updatedTask.id ? updatedTask : task)
+    );
+    setEditTaskModalOpen(false);
+    toast({
+      title: "Task updated",
+      description: "Your task has been updated successfully."
+    });
+  }
+
+  // ---- Delete task handler
+  function handleDeleteTask(taskId) {
+    setTasks(prev => prev.filter(task => task.id !== taskId));
+    toast({
+      title: "Task deleted",
+      description: "Your task has been removed from the project."
+    });
   }
 
   // ---- Toggle task completion and record the date
@@ -141,7 +177,13 @@ export default function ProjectDetails() {
 
       {/* Task / Milestone list */}
       <div className="flex-1 px-3 pb-32">
-        <TaskList tasks={tasks} setTasks={setTasks} onToggleTask={handleToggleTask} />
+        <TaskList 
+          tasks={tasks} 
+          setTasks={setTasks} 
+          onToggleTask={handleToggleTask} 
+          onDeleteTask={handleDeleteTask}
+          onEditTask={handleEditTask}
+        />
       </div>
 
       {/* Daily Progress Log */}
@@ -175,14 +217,29 @@ export default function ProjectDetails() {
         )}
       </div>
 
-      {/* Updated floating add task button to match homepage black button */}
+      {/* Floating add task button (black styled) */}
       <button
         className="fixed bottom-28 right-6 bg-black text-white rounded-full p-5 shadow-xl hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center"
-        onClick={() => setModalOpen(true)}
+        onClick={() => setAddTaskModalOpen(true)}
       >
         <Plus size={28} />
       </button>
-      <AddTaskModal open={modalOpen} onOpenChange={setModalOpen} onSubmit={handleAddTask} categories={["Urgent", "Routine", "Important", "Personal", "Work-related"]} />
+      
+      {/* Task Modals */}
+      <AddTaskModal 
+        open={addTaskModalOpen} 
+        onOpenChange={setAddTaskModalOpen} 
+        onSubmit={handleAddTask} 
+        categories={["Urgent", "Routine", "Important", "Personal", "Work-related"]} 
+      />
+      
+      <EditTaskModal 
+        open={editTaskModalOpen}
+        onOpenChange={setEditTaskModalOpen}
+        onSubmit={handleSaveTask}
+        task={currentEditTask}
+        categories={["Urgent", "Routine", "Important", "Personal", "Work-related"]}
+      />
     </div>
   );
 }
