@@ -24,14 +24,17 @@ export default function ContributionGraph({ logs, tasks }: { logs: { date: strin
   const tasksByDate = tasks
     .filter(t => t.completed && t.completedDate)
     .reduce((acc, task) => {
-      const date = task.completedDate;
-      acc[date] = (acc[date] || 0) + 1;
+      const date = task.completedDate?.slice(0, 10) || "";
+      if (date) {
+        acc[date] = (acc[date] || 0) + 1;
+      }
       return acc;
     }, {} as Record<string, number>);
   
   // Add log dates as at least 1 task
   logs.forEach(log => {
-    tasksByDate[log.date] = Math.max(tasksByDate[log.date] || 0, 1);
+    const dateKey = log.date.slice(0, 10);
+    tasksByDate[dateKey] = Math.max(tasksByDate[dateKey] || 0, 1);
   });
   
   // Get the fill percentage for each day
@@ -50,6 +53,9 @@ export default function ContributionGraph({ logs, tasks }: { logs: { date: strin
     // Return green color when fully completed (100%)
     return "bg-green-500";
   };
+
+  console.log("Tasks by date:", tasksByDate);
+  console.log("Tasks array:", tasks.filter(t => t.completed));
 
   return (
     <div className="flex flex-col items-center">
