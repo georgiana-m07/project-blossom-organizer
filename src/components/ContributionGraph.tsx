@@ -41,26 +41,36 @@ export default function ContributionGraph({ logs, tasks }: { logs: { date: strin
     return Math.min(100, (count / TASKS_FOR_FULL_SQUARE) * 100);
   };
 
+  // Get color based on fill percentage - more intense color for higher completion
+  const getColorClass = (fillPercent: number) => {
+    if (fillPercent === 0) return "bg-purple-100";
+    if (fillPercent < 33) return "bg-purple-200";
+    if (fillPercent < 67) return "bg-purple-300";
+    if (fillPercent < 100) return "bg-purple-400";
+    return "bg-purple-500";
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-row gap-1">
         {past30.map((date) => {
           const fillPercent = getFillPercentage(date);
           const hasActivity = fillPercent > 0;
+          const taskCount = tasksByDate[date] || 0;
           
           return (
             <div
               key={date}
               className="w-3 h-3 rounded-sm relative border border-purple-100 overflow-hidden"
-              title={`${date}${hasActivity ? ` — ${fillPercent.toFixed(0)}% complete` : ""}`}
+              title={`${date}${hasActivity ? ` — ${taskCount}/${TASKS_FOR_FULL_SQUARE} tasks (${fillPercent.toFixed(0)}%)` : ""}`}
             >
               {/* Background */}
-              <div className="absolute inset-0 bg-purple-100"></div>
+              <div className="absolute inset-0 bg-purple-50"></div>
               
               {/* Foreground fill based on activity percentage */}
               {hasActivity && (
                 <div 
-                  className="absolute bottom-0 left-0 right-0 bg-purple-500 transition-all"
+                  className={`absolute bottom-0 left-0 right-0 transition-all ${getColorClass(fillPercent)}`}
                   style={{ height: `${fillPercent}%` }}
                 ></div>
               )}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, ListCheck, Pencil, Plus } from "lucide-react";
 import { TaskList } from "../components/TaskList";
@@ -174,11 +175,13 @@ export default function ProjectDetails() {
         )}
       </div>
 
-      {/* Floating add task button */}
-      <Button className="fixed bottom-28 right-6 bg-purple-600 rounded-full h-14 w-14 shadow-lg text-white text-lg flex items-center justify-center"
-        onClick={() => setModalOpen(true)}>
-        <Plus />
-      </Button>
+      {/* Updated floating add task button to match homepage black button */}
+      <button
+        className="fixed bottom-28 right-6 bg-black text-white rounded-full p-5 shadow-xl hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center"
+        onClick={() => setModalOpen(true)}
+      >
+        <Plus size={28} />
+      </button>
       <AddTaskModal open={modalOpen} onOpenChange={setModalOpen} onSubmit={handleAddTask} categories={["Urgent", "Routine", "Important", "Personal", "Work-related"]} />
     </div>
   );
