@@ -3,6 +3,7 @@
 ## Project info
 
 **URL**: https://lovable.dev/projects/4e1c3732-eacd-4056-b47d-2bc8ad93c0ea
+**Live URL**: https://project-blossom-organizer.lovable.app/
 
 ## How can I edit this code?
 
