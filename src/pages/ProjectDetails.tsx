@@ -78,6 +78,28 @@ export default function ProjectDetails() {
     setModalOpen(false);
   }
 
+  // ---- Toggle task completion and record the date
+  function handleToggleTask(id) {
+    const today = new Date().toISOString().slice(0, 10);
+    
+    setTasks(prev => 
+      prev.map(task => {
+        if (task.id === id) {
+          // If completing the task, add today's date
+          if (!task.completed) {
+            return { ...task, completed: true, completedDate: today };
+          } 
+          // If uncompleting the task, remove the completion date
+          else {
+            const { completedDate, ...rest } = task;
+            return { ...rest, completed: false };
+          }
+        }
+        return task;
+      })
+    );
+  }
+
   // --- Daily Log state and log handler
   const [logTextarea, setLogTextarea] = useState("");
   function handleLogProgress() {
@@ -110,15 +132,15 @@ export default function ProjectDetails() {
           <div className="h-3 rounded-lg bg-purple-500 transition-all" style={{ width: `${percent}%` }} />
         </div>
         <span className="text-xs mt-1 text-gray-500">{percent}% done</span>
-        {/* Contribution graph visual */}
+        {/* Contribution graph visual - now with tasks passed to it */}
         <div className="mt-2">
-          <ContributionGraph logs={logs} />
+          <ContributionGraph logs={logs} tasks={tasks} />
         </div>
       </div>
 
       {/* Task / Milestone list */}
       <div className="flex-1 px-3 pb-32">
-        <TaskList tasks={tasks} setTasks={setTasks} />
+        <TaskList tasks={tasks} setTasks={setTasks} onToggleTask={handleToggleTask} />
       </div>
 
       {/* Daily Progress Log */}

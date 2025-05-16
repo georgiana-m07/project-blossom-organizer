@@ -10,11 +10,16 @@ const categoryColors = {
   "Work-related": "bg-orange-100 text-orange-700"
 };
 
-export function TaskList({ tasks, setTasks }) {
+export function TaskList({ tasks, setTasks, onToggleTask }) {
   function toggleCompleted(id) {
-    setTasks(tasks.map(t =>
-      t.id === id ? { ...t, completed: !t.completed } : t
-    ));
+    // Use the passed handler if available, otherwise fallback to direct state update
+    if (onToggleTask) {
+      onToggleTask(id);
+    } else {
+      setTasks(tasks.map(t =>
+        t.id === id ? { ...t, completed: !t.completed } : t
+      ));
+    }
   }
 
   return (

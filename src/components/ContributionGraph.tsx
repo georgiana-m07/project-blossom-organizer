@@ -13,27 +13,62 @@ function getPastDays(n: number) {
   return arr;
 }
 
-// Visual GitHub-style contribution grid
-export default function ContributionGraph({ logs }: { logs: { date: string }[] }) {
+// Define the number of tasks needed for a full square
+const TASKS_FOR_FULL_SQUARE = 3;
+
+// Visual GitHub-style contribution grid with partial fill
+export default function ContributionGraph({ logs, tasks }: { logs: { date: string, text: string }[], tasks: { id: string, completed: boolean, completedDate?: string }[] }) {
   const past30 = getPastDays(30);
-  const logDates = new Set(logs.map((l) => l.date));
+  
+  // Count tasks completed by date
+  const tasksByDate = tasks
+    .filter(t => t.completed && t.completedDate)
+    .reduce((acc, task) => {
+      const date = task.completedDate;
+      acc[date] = (acc[date] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  
+  // Add log dates as at least 1 task
+  logs.forEach(log => {
+    tasksByDate[log.date] = Math.max(tasksByDate[log.date] || 0, 1);
+  });
+  
+  // Get the fill percentage for each day
+  const getFillPercentage = (date: string) => {
+    const count = tasksByDate[date] || 0;
+    // Cap at 100% even if more than TASKS_FOR_FULL_SQUARE tasks
+    return Math.min(100, (count / TASKS_FOR_FULL_SQUARE) * 100);
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-row gap-1">
-        {past30.map((date) => (
-          <div
-            key={date}
-            className={`w-3 h-3 rounded-sm transition-colors border border-purple-100
-              ${logDates.has(date)
-                ? "bg-purple-500"
-                : "bg-purple-100"
-              }
-            `}
-            title={date + (logDates.has(date) ? " — Reflection logged" : "")}
-          />
-        ))}
+        {past30.map((date) => {
+          const fillPercent = getFillPercentage(date);
+          const hasActivity = fillPercent > 0;
+          
+          return (
+            <div
+              key={date}
+              className="w-3 h-3 rounded-sm relative border border-purple-100 overflow-hidden"
+              title={`${date}${hasActivity ? ` — ${fillPercent.toFixed(0)}% complete` : ""}`}
+            >
+              {/* Background */}
+              <div className="absolute inset-0 bg-purple-100"></div>
+              
+              {/* Foreground fill based on activity percentage */}
+              {hasActivity && (
+                <div 
+                  className="absolute bottom-0 left-0 right-0 bg-purple-500 transition-all"
+                  style={{ height: `${fillPercent}%` }}
+                ></div>
+              )}
+            </div>
+          );
+        })}
       </div>
-      <div className="text-[10px] text-gray-400 mt-1">Last 30 days</div>
+      <div className="text-[10px] text-gray-400 mt-1">Last 30 days (3 tasks = full square)</div>
     </div>
   );
 }

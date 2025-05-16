@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Plus } from "lucide-react";
 import { ProjectModal } from "../components/ProjectModal";
@@ -74,9 +75,9 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Floating Add Project Button */}
+      {/* Floating Add Project Button - Changed to black */}
       <button
-        className="fixed bottom-6 right-6 bg-purple-500 text-white rounded-full p-5 shadow-xl hover:bg-purple-600 transition-colors duration-200 flex items-center gap-2"
+        className="fixed bottom-6 right-6 bg-black text-white rounded-full p-5 shadow-xl hover:bg-gray-800 transition-colors duration-200 flex items-center gap-2"
         onClick={() => setModalOpen(true)}
         aria-label="Add new project"
       >
