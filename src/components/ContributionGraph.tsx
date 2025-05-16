@@ -47,7 +47,8 @@ export default function ContributionGraph({ logs, tasks }: { logs: { date: strin
     if (fillPercent < 33) return "bg-purple-200";
     if (fillPercent < 67) return "bg-purple-300";
     if (fillPercent < 100) return "bg-purple-400";
-    return "bg-purple-500";
+    // Return green color when fully completed (100%)
+    return "bg-green-500";
   };
 
   return (
